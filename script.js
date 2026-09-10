@@ -59,20 +59,55 @@ window.onload = function () {
 
   requestAnimationFrame(update);
   setInterval(placeCactus, 1000);//1000 milliseconds
+  document.addEventListener("Keydown", moveDino)
 };
 function update() {
+  if(gameOver){
+    return;
+  }
 
   requestAnimationFrame(update);
   context.clearRect(0, 0, board.width, board.height);
+  //for dino
+  velocityY += gravity;
+  dino.y = Math.min(dino.y + velocityY, dinoY)//apply gravity
   context.drawImage(dinoImg, dino.x, dino.y, dino.width, dino.height);
+  //for cactus
   for(i = 0; i < cactusArray.length; i++){
+
     let cactus = cactusArray[i];
     let cactus.x += velocityX;
     context.drawImage(cactus.img, cactus.x, cactus.y, cactus.width, cactus.height)
+    if(detectCollision){
+      gameOver = true;
+      dinoImg.src = "./dino-dead.png";
+      dinoImg.onload = function(){
+        context.drawImage(dinoImg, dino.x, dino.y, dino.width, dino.height);
+      }
+    }
+  }
+}
+
+context.fillStyle = "black";
+context.font = "20px courier";
+score++;
+context.filltext(score, 5, 20);
+
+function moveDino(e){
+  if(gameOver){
+    return;
+  }
+  if((e.code == "Space" || e.code == "ArrowUp") && dino.y == dinoY){
+    //jump
+    velocityY = -10;
+
   }
 }
 
 function placeCactus(){
+  if(gameOver){
+    return;
+  }
   let cactus = {
     img : null,
     x : cactusX,
@@ -101,4 +136,11 @@ function placeCactus(){
   if(cactusArray > 5){
     cactusArray.shift();//removes the first element
   }
+}
+function detectCollision(a, b){
+  return a.x < b.x + b.width &&//a's top left corner touches b's top right corner
+         a.x + a.width > b.width && //a's top right corner passes b's top left corner
+         a.y < b.y + b.height && //a's top left corner doesn't reach b's bottom left corner
+         a.y + a.height > b.y; //a's bottom left corner passes b's top left corner
+
 }
