@@ -52,7 +52,7 @@ window.onload = function () {
   cactus1Img = new Image();
   cactus1Img.src = "./cactus1.png";
   cactus2Img = new Image();
-  cactus1Img.src = "./cactus2.png";
+  cactus2Img.src = "./cactus2.png";
   cactus3Img = new Image();
   cactus3Img.src = "./cactus3.png";
 
@@ -76,9 +76,9 @@ function update() {
   for(i = 0; i < cactusArray.length; i++){
 
     let cactus = cactusArray[i];
-    let cactus.x += velocityX;
+    cactus.x += velocityX;
     context.drawImage(cactus.img, cactus.x, cactus.y, cactus.width, cactus.height)
-    if(detectCollision){
+    if(detectCollision(dino, cactus)){
       gameOver = true;
       dinoImg.src = "./dino-dead.png";
       dinoImg.onload = function(){
@@ -91,13 +91,13 @@ function update() {
 context.fillStyle = "black";
 context.font = "20px courier";
 score++;
-context.filltext(score, 5, 20);
+context.fillText(score, 5, 20);
 
 function moveDino(e){
   if(gameOver){
     return;
   }
-  if((e.code == "Space" || e.code == "ArrowUp") && dino.y == dinoY){
+  if((e.code == "Space" || e.code == "arrowUp") && dino.y == dinoY){
     //jump
     velocityY = -10;
 
@@ -127,7 +127,7 @@ function placeCactus(){
     cactus.width = cactus2Width;
     cactusArray.push(cactus);
 
-  } else (placeCactusChance > .50){
+  } else if (placeCactusChance > .50){
     cactus.img = cactus1Img;
     cactus.width = cactus1Width;
     cactusArray.push(cactus);
@@ -139,7 +139,7 @@ function placeCactus(){
 }
 function detectCollision(a, b){
   return a.x < b.x + b.width &&//a's top left corner touches b's top right corner
-         a.x + a.width > b.width && //a's top right corner passes b's top left corner
+         a.x + a.width > b.x && //a's top right corner passes b's top left corner
          a.y < b.y + b.height && //a's top left corner doesn't reach b's bottom left corner
          a.y + a.height > b.y; //a's bottom left corner passes b's top left corner
 
